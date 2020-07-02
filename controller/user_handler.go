@@ -8,8 +8,8 @@ import (
 func AuthHandler(c *gin.Context) {
 	service.Auth(c)
 }
-func JWTAuthHandler() {
-	service.JWTAuth()
+func JWTAuthHandler(c *gin.Context) {
+	service.JWTAuth(c)
 }
 
 func UserInfoHandler(c *gin.Context) {
