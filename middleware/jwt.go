@@ -1,11 +1,9 @@
-package service
+package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"net/http"
-	Model "snail/model"
-	repo "snail/repository"
+	Models "snail/model"
 	"snail/util"
 	"strings"
 )
@@ -14,7 +12,7 @@ func Auth(c *gin.Context) {
 	name, _ := c.GetPostForm("username")
 	password, _ := c.GetPostForm("password")
 	// 用户发送用户名和密码过来
-	var user Model.User
+	var user Models.User
 	//查询数据库
 	user.ID = 1
 	user.Username = "admin"
@@ -76,32 +74,4 @@ func JWTAuth(c *gin.Context) {
 	c.Set("id", mc.Id)
 	c.Next() // 后续的处理函数可以用过c.Get("username")来获取当前请求的用户信息
 
-}
-
-/**
-获取当前用户信息
-*/
-type UserService struct{
-	Repo repo.UserService `inject:""`
-}
-func (u *UserService)GetByUserId(c *gin.Context, uid string) (*Model.User, error) {
-	var user Model.User
-	db := util.DB
-	db.Where("user_id = ?", uid).First(&user)
-	if user.ID == 0 {
-		return &Model.User{}, errors.New("未查到用户信息xxx")
-	}
-
-	return &Model.User{ID: user.ID, Nickname:user.Nickname, Username:user.Username, UserId:user.UserId,
-		Title:user.Title}, nil
-}
-
-func (u *UserService)GetByUserIds(c *gin.Context, uid string) (*[]Model.User, error) {
-	return u.Repo.GetByUserIds(c, uid)
-}
-func (u *UserService)Create(c *gin.Context, m *Model.User) (int64, error) {
-	return u.Repo.Create(c, m)
-}
-func (u *UserService)Update(c *gin.Context, m *Model.User) (*Model.User, error) {
-	return u.Repo.Update(c, m)
 }

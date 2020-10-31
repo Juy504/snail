@@ -2,8 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"snail/controller"
+	handler "snail/controller"
 	"snail/middleware"
+	_ "snail/util"
 )
 
 func SetupRouter() *gin.Engine {
@@ -12,14 +13,14 @@ func SetupRouter() *gin.Engine {
 	r.Use(middleware.Logger())
 
 	//jwt鉴权
-	r.POST("auth", controller.AuthHandler)
+	//r.POST("auth", controller.AuthHandler)
 
 	//校验
-	r.Use(controller.JWTAuthHandler)
+	//r.Use(controller.JWTAuthHandler)
 	//获取当前用户信息
-	user := r.Group("user")
+	api := r.Group("v1")
 	{
-		user.GET("userInfo", controller.UserInfoHandler)
+		api.GET("userInfoJuy", handler.UserInfoHandler)
 	}
 	return r
 }
