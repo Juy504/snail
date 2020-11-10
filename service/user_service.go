@@ -1,8 +1,8 @@
 package service
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"net/http"
 	Model "snail/model"
 	repo "snail/repository"
@@ -84,20 +84,26 @@ func JWTAuth(c *gin.Context) {
 type UserService struct{
 	Repo repo.UserService `inject:""`
 }
-func (u *UserService)GetByUserId(c *gin.Context, uid string) (*Model.User, error) {
+func (u *UserService)GetUserInfo(c *gin.Context, uid string, phone string) (*Model.User, error) {
 	var user Model.User
 	db := util.DB
-	db.Where("user_id = ?", uid).First(&user)
-	if user.ID == 0 {
-		return &Model.User{}, errors.New("未查到用户信息xxx")
+	if uid == "" && phone == "" {
+		return &Model.User{}, errors.New("参数不合法")
 	}
-
+	if uid != ""{
+		db.Where("user_id = ?", uid).First(&user)
+	}else if phone != ""{
+		db.Where("phone = ?", phone).First(&user)
+	}
+	if user.ID == 0 {
+		return &Model.User{}, errors.New("未查到用户信息")
+	}
 	return &Model.User{ID: user.ID, Nickname:user.Nickname, Username:user.Username, UserId:user.UserId,
-		Title:user.Title}, nil
+		Title:user.Title, Salt: user.Salt}, nil
 }
 
-func (u *UserService)GetByUserIds(c *gin.Context, uid string) (*[]Model.User, error) {
-	return u.Repo.GetByUserIds(c, uid)
+func (u *UserService)GetByUserIds(c *gin.Context, uids string) (*[]Model.User, error) {
+	return u.Repo.GetByUserIds(c, uids)
 }
 func (u *UserService)Create(c *gin.Context, m *Model.User) (int64, error) {
 	return u.Repo.Create(c, m)
