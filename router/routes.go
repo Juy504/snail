@@ -21,6 +21,7 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("v1")
 	{
 		api.GET("userInfoJuy", handler.UserInfoHandler)
+		api.GET("phoneLogin", handler.PhoneLogin)
 	}
 	return r
 }
