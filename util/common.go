@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
+	"os"
 )
 
 func HttpGet(url string)(string, error){
@@ -50,4 +51,15 @@ func HttpPost(url string)(string, error){
 		return "", err
 	}
 	return string(body), nil
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }

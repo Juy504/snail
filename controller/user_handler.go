@@ -59,5 +59,14 @@ func PhoneLogin(c *gin.Context){
 }
 
 func Regist(c *gin.Context){
-	//
+	phone := c.Query("phone")
+	password := c.Query("password")
+	if phone == "" || password == ""{
+		err := serializer.ErrorData(errors.New("参数不合法"), 1)
+		c.JSON(http.StatusOK, err)
+		return
+	}
+	//userType:= new(service.UserService)
+	//var user repo.UserService
+	//user = userType
 }
