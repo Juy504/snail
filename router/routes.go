@@ -20,8 +20,9 @@ func SetupRouter() *gin.Engine {
 	//获取当前用户信息
 	api := r.Group("v1")
 	{
-		api.GET("userInfoJuy", handler.UserInfoHandler)
+		api.GET("userInfo", handler.UserInfoHandler)
 		api.GET("phoneLogin", handler.PhoneLogin)
+		api.GET("regist", handler.Regist)
 	}
 	return r
 }

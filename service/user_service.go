@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+	mw "snail/middleware"
 	"net/http"
 	Model "snail/model"
 	repo "snail/repository"
@@ -88,6 +90,10 @@ func (u *UserService)GetUserInfo(c *gin.Context, uid string, phone string) (*Mod
 	var user Model.User
 	db := util.DB
 	if uid == "" && phone == "" {
+		mw.LogClient.WithFields(log.Fields{
+			"user_id": uid,
+			"phone": phone,
+		}).Info("请求参数不合法", "info")
 		return &Model.User{}, errors.New("参数不合法")
 	}
 	if uid != ""{
@@ -96,8 +102,15 @@ func (u *UserService)GetUserInfo(c *gin.Context, uid string, phone string) (*Mod
 		db.Where("phone = ?", phone).First(&user)
 	}
 	if user.ID == 0 {
+		mw.LogClient.WithFields(log.Fields{
+			"user_id": uid,
+		}).Info("未找到用户信息", "info")
 		return &Model.User{}, errors.New("未查到用户信息")
 	}
+	panic("LogClient")
+	mw.LogClient.WithFields(log.Fields{
+		"user_id": user.UserId,
+	}).Info("获取用户信息成功", "info")
 	return &Model.User{ID: user.ID, Nickname:user.Nickname, Username:user.Username, UserId:user.UserId,
 		Title:user.Title, Salt: user.Salt}, nil
 }
